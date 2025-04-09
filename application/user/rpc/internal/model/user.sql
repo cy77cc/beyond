@@ -1,4 +1,4 @@
-create database beyond_user;
+create database if not exists beyond_user;
 use beyond_user;
 
 CREATE TABLE `user` (

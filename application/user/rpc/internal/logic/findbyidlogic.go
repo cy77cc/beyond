@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/cy77cc/beyond/application/user/rpc/internal/svc"
 	"github.com/cy77cc/beyond/application/user/rpc/pb/service"
@@ -24,7 +26,17 @@ func NewFindByIdLogic(ctx context.Context, svcCtx *svc.ServiceContext) *FindById
 }
 
 func (l *FindByIdLogic) FindById(in *service.FindByIdRequest) (*service.FindByIdResponse, error) {
-	// todo: add your logic here and delete this line
+	user, err := l.svcCtx.UserModel.FindOne(l.ctx, in.UserId)
 
-	return &service.FindByIdResponse{}, nil
+	if err != nil {
+		logx.Errorf("FindById userId: %d error: %v", in.UserId, err)
+		return nil, status.New(codes.NotFound, "用户不存在").Err()
+	}
+
+	return &service.FindByIdResponse{
+		UserId:   user.Id,
+		Username: user.Username,
+		//Mobile:   user.Mobile,
+		Avatar: user.Avatar,
+	}, nil
 }
